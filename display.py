@@ -49,7 +49,6 @@ def query():
     response = requests.get("http://127.0.0.1:5000/snake")
     s.list = response.json()
     response = requests.get("http://127.0.0.1:5000/food")
-    print(response.json())
     s.food = response.json()
 
 def printer():
