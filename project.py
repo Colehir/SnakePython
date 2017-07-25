@@ -3,6 +3,8 @@ import time
 import threading
 import random
 
+from flask import json
+from pip._vendor import requests
 
 pygame.init()
 
@@ -43,7 +45,6 @@ class Snake:
 def ball(x, y, color):
     pygame.draw.circle(display, color, (int(x*20), y*20), 10)
     pygame.display.update()
-    clock.tick(60)
 
 s = Snake()
 food = Point(random.randrange(1, 40), random.randrange(1, 30))
@@ -66,6 +67,13 @@ def collision():
         run = False
         quit(0)
 
+
+def query():
+    snakeTemp =[]
+    for p in s.list:
+        snakeTemp.append({'x': p.x, 'y': p.y})
+    requests.post("https://hiraparac2014.mybluemix.net/snake", json={'list': snakeTemp})
+    requests.post("https://hiraparac2014.mybluemix.net/food", json={'food': {'x': food.x, 'y': food.y}})
 
 def printer():
     ball(s.x, s.y, red)
@@ -97,6 +105,7 @@ def printer():
             ball(last.x, last.y, black)
         collision()
         pygame.display.update()
+        threading.Thread(target=query).start()
         clock.tick(FPS)
 
 
@@ -109,13 +118,17 @@ def main():
                 quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
-                    s.direction = 0
+                    if s.direction != 2:
+                        s.direction = 0
                 elif event.key == pygame.K_DOWN:
-                    s.direction = 1
+                    if s.direction != 3:
+                        s.direction = 1
                 elif event.key == pygame.K_LEFT:
-                    s.direction = 2
+                    if s.direction != 0:
+                        s.direction = 2
                 elif event.key == pygame.K_UP:
-                    s.direction = 3
+                    if s.direction != 1:
+                        s.direction = 3
 
 
 if __name__ == "__main__":

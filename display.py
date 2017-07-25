@@ -46,23 +46,29 @@ def ball(x, y, color):
 s = Snake()
 
 def query():
-    response = requests.get("http://127.0.0.1:5000/snake")
+    response = requests.get("https://hiraparac2014.mybluemix.net/snake")
     s.list = response.json()
-    response = requests.get("http://127.0.0.1:5000/food")
+    response = requests.get("https://hiraparac2014.mybluemix.net/food")
     s.food = response.json()
+
 
 def printer():
     while True:
         query()
+        display.fill((0,0,0))
         for point in s.list:
-            ball(point["x"], point["x"], red)
+            ball(point["x"], point["y"], red)
         ball(s.food["x"], s.food["y"], blue)
         pygame.display.update()
-        clock.tick(FPS)
 
 
 def main():
-    printer()
+    threading.Thread(target=printer).start()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
 
 
 if __name__ == "__main__":
