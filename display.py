@@ -28,15 +28,16 @@ FPS = 10
 
 clock = pygame.time.Clock()
 
-class Point:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
 class Snake:
     def __init__(self):
         self.list = []
         self.food = {}
+
+    def query(self):
+        response = requests.get("https://hiraparac2014.mybluemix.net/snake")
+        self.list = response.json()
+        response = requests.get("https://hiraparac2014.mybluemix.net/food")
+        self.food = response.json()
 
 
 def ball(x, y, color):
@@ -45,17 +46,11 @@ def ball(x, y, color):
 
 s = Snake()
 
-def query():
-    response = requests.get("https://hiraparac2014.mybluemix.net/snake")
-    s.list = response.json()
-    response = requests.get("https://hiraparac2014.mybluemix.net/food")
-    s.food = response.json()
-
 
 def printer():
     while True:
-        query()
-        display.fill((0,0,0))
+        s.query()
+        display.fill((0, 0, 0))
         for point in s.list:
             ball(point["x"], point["y"], red)
         ball(s.food["x"], s.food["y"], blue)

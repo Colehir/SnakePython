@@ -4,7 +4,7 @@ import threading
 import random
 
 from flask import json
-from pip._vendor import requests
+import requests
 
 pygame.init()
 
@@ -40,40 +40,38 @@ class Snake:
         self.list = []
         self.direction = 0
         self.dict = {}
+        self.food = Point(random.randrange(1, 40), random.randrange(1, 30))
 
+    def collision(self):
+        global run
+        for point in self.list:
+            if self.x == point.x and self.y == point.y:
+                pygame.quit()
+                run = False
+                quit(0)
+        if self.x < 0 or self.x > 40:
+            pygame.quit()
+            run = False
+            quit(0)
+        if self.y < 0 or self.y > 30:
+            pygame.quit()
+            run = False
+            quit(0)
+
+    def query(self):
+        snakeTemp = []
+        for p in self.list:
+            snakeTemp.append({'x': p.x, 'y': p.y})
+        requests.post("https://hiraparac2014.mybluemix.net/snake", json={'list': snakeTemp})
+        requests.post("https://hiraparac2014.mybluemix.net/food", json={'food': {'x': self.food.x, 'y': self.food.y}})
+
+
+s = Snake()
+run = True
 
 def ball(x, y, color):
     pygame.draw.circle(display, color, (int(x*20), y*20), 10)
     pygame.display.update()
-
-s = Snake()
-food = Point(random.randrange(1, 40), random.randrange(1, 30))
-run = True
-
-
-def collision():
-    global run
-    for point in s.list:
-        if s.x == point.x and s.y == point.y:
-            pygame.quit()
-            run = False
-            quit(0)
-    if s.x < 0 or s.x > 40:
-        pygame.quit()
-        run = False
-        quit(0)
-    if s.y < 0 or s.y > 30:
-        pygame.quit()
-        run = False
-        quit(0)
-
-
-def query():
-    snakeTemp =[]
-    for p in s.list:
-        snakeTemp.append({'x': p.x, 'y': p.y})
-    requests.post("https://hiraparac2014.mybluemix.net/snake", json={'list': snakeTemp})
-    requests.post("https://hiraparac2014.mybluemix.net/food", json={'food': {'x': food.x, 'y': food.y}})
 
 def printer():
     ball(s.x, s.y, red)
@@ -82,7 +80,7 @@ def printer():
     ball(s.x, s.y, red)
     s.list.append(Point(s.x, s.y))
     s.x += 1
-    ball(food.x, food.y, blue)
+    ball(s.food.x, s.food.y, blue)
     while run:
         ball(s.x, s.y, red)
         s.list.append(Point(s.x, s.y))
@@ -96,16 +94,16 @@ def printer():
         elif s.direction == 3:
             s.y -= 1
 
-        if s.x == food.x and s.y == food.y:
-            food.x = random.randrange(1, 40)
-            food.y = random.randrange(1, 30)
-            ball(food.x, food.y, blue)
+        if s.x == s.food.x and s.y == s.food.y:
+            s.food.x = random.randrange(1, 40)
+            s.food.y = random.randrange(1, 30)
+            ball(s.food.x, s.food.y, blue)
         else:
             last = s.list.pop(0)
             ball(last.x, last.y, black)
-        collision()
+            s.collision()
         pygame.display.update()
-        threading.Thread(target=query).start()
+        threading.Thread(target=s.query).start()
         clock.tick(FPS)
 
 
