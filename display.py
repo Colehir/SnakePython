@@ -41,7 +41,7 @@ class Snake:
 
 
 def ball(x, y, color):
-    pygame.draw.circle(display, color, (int(x*20), y*20), 10)
+    pygame.draw.circle(display, color, (int(x*20)+10, y*20+10), 10)
     pygame.display.update()
 
 s = Snake()

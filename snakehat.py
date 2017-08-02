@@ -27,7 +27,6 @@ class Snake:
         self.y = 0
         self.list = []
         self.direction = 0
-        self.dict = {}
         self.food = Point(random.randrange(3, 7), random.randrange(3, 7))
 
     def query(self):
@@ -57,7 +56,7 @@ class Snake:
         self.food.x = random.randrange(0, 7)
         self.food.y = random.randrange(0, 7)
         for point in self.list:
-            if point.x == food.x and point.y == food.y:
+            if point.x == self.food.x and point.y == self.food.y:
                 self.getFood()
 
 
@@ -78,7 +77,7 @@ def printer():
     draw_dot(s.x, s.y, 1)
     s.list.append(Point(s.x, s.y))
     s.x += 1
-    draw_dot(food.x, food.y, 2)
+    draw_dot(s.food.x, s.food.y, 2)
     while run:
         threading.Thread(target=s.query).start()
         if s.direction == 0:
@@ -90,9 +89,9 @@ def printer():
         elif s.direction == 3:
             s.y -= 1
 
-        if s.x == food.x and s.y == food.y:
+        if s.x == s.food.x and s.y == s.food.y:
             s.getFood()
-            draw_dot(food.x, food.y, 2)
+            draw_dot(s.food.x, s.food.y, 2)
             FPS = FPS + .2
         else:
             last = s.list.pop(0)
@@ -108,7 +107,6 @@ def printer():
 def main():
     global run
     global s
-    global food
     global FPS
     sense.clear()
     while True:
@@ -135,7 +133,7 @@ def main():
                 continue
             break
         s = Snake()
-        food = Point(random.randrange(3, 7), random.randrange(3, 7))
+        s.food = Point(random.randrange(3, 7), random.randrange(3, 7))
         run = True
         FPS = 1
 
